@@ -4,18 +4,24 @@ import requests
 import os
 import time
 import re
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
 @app.route('/<path>')
 def get(path): # pragma: no cover
-    return quark(path, 
+    message = quark(path, 
                  request.headers, 
                  os.environ.get('APP_TYPE'), 
                  os.environ.get('APP_DESTINATION'),
                  os.environ.get('APP_SIMULATE_ERROR'),
                  os.environ.get('POD_NAME'),
                  os.environ.get('POD_NAMESPACE'))
+    app.logger.info(message)
+    print(os.environ.get('POD_NAME'))
+    return message
 
 def chain_response(past, present):    
     if past is None:      
@@ -59,7 +65,7 @@ def quark(path, headers, type, destination, error, podname, namespace):
     elif type == 'passthrough':
         present = requests.get(destination, headers=prepare_outbound_headers(headers)).text
         past = '{} ({} {} {})'.format(path, namespace, podname, get_version())
-        return chain_response(past, present)
+        return chain_response(past,present)
     else:
         return '{} ({} {} {})'.format(path, namespace, podname, get_version())
 
