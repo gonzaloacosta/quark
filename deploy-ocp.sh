@@ -2,29 +2,37 @@
 NAMESPACE=quark
 oc create namespace $NAMESPACE
 
-# Deploy swim
+# Deploy Start
+oc process -f template.yaml -n $NAMESPACE \
+    -p APP_NAME=start \
+    -p APP_VERSION=v1 \
+    -p APP_TYPE=passthrough \
+    -p APP_DESTINATION=http://swim:5000/swim | oc apply -f - -n $NAMESPACE
+
+# Deploy SWIM
 oc process -f template.yaml -n $NAMESPACE \
     -p APP_NAME=swim \
     -p APP_VERSION=v1 \
-    -p QUARK_TYPE=passthrough \
-    -p QUARK_DESTINATION=http://bike:5000/bike | oc apply -f - -n $NAMESPACE
+    -p APP_TYPE=passthrough \
+    -p APP_DESTINATION=http://bike:5000/bike | oc apply -f - -n $NAMESPACE
 
-# Deploy bike
+# Deploy BIKE
 oc process -f template.yaml -n $NAMESPACE \
     -p APP_NAME=bike \
     -p APP_VERSION=v1 \
-    -p QUARK_TYPE=passthrough \
-    -p QUARK_DESTINATION=http://run:5000/run | oc apply -f - -n $NAMESPACE
+    -p APP_TYPE=passthrough \
+    -p APP_DESTINATION=http://run:5000/run | oc apply -f - -n $NAMESPACE
 
-# Deploy run
+# Deploy RUN 
 oc process -f template.yaml -n $NAMESPACE \
     -p APP_NAME=run \
     -p APP_VERSION=v1 \
-    -p QUARK_TYPE=passthrough \
-    -p QUARK_DESTINATION=http://finisher:5000/finisher | oc apply -f - -n $NAMESPACE
+    -p APP_TYPE=edge | oc apply -f - -n $NAMESPACE
 
-# Deploy finisher
-oc process -f template.yaml -n $NAMESPACE \
-    -p APP_NAME=finisher \
-    -p APP_VERSION=v1 \
-    -p QUARK_TYPE=edge | oc apply -f - -n $NAMESPACE
+# Expose SERVICE
+oc expose svc start
+
+# Test ROUTE
+sleep 10 
+
+curl $(oc get routes start -o jsonpath='{ .spec.host }')/start

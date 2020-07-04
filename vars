@@ -1,0 +1,5 @@
+export APP_VERSION=v2 
+export APP_TYPE=passthrough
+export APP_DESTINATION=https://api.github.com
+export POD_NAME=quark
+export POD_NAMESPACE=myns

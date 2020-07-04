@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 @app.route('/<path>')
 def get(path): # pragma: no cover
+
     message = quark(path, 
                  request.headers, 
                  os.environ.get('APP_TYPE'), 
@@ -19,8 +20,9 @@ def get(path): # pragma: no cover
                  os.environ.get('APP_SIMULATE_ERROR'),
                  os.environ.get('POD_NAME'),
                  os.environ.get('POD_NAMESPACE'))
+
     app.logger.info(message)
-    print(os.environ.get('POD_NAME'))
+
     return message
 
 def chain_response(past, present):    
@@ -63,10 +65,11 @@ def quark(path, headers, type, destination, error, podname, namespace):
     if error == 'true':
         return 'Error', 503
     elif type == 'passthrough':
-        present = requests.get(destination, headers=prepare_outbound_headers(headers)).text
-        past = '{} ({} {} {})'.format(path, namespace, podname, get_version())
-        return chain_response(past,present)
-    else:
+        present = requests.get(destination, headers=prepare_outbound_headers(headers))
+        past = '{} ({} {} {} {} {})'.format(path, namespace, podname, get_version(), present.elapsed, present.status_code)
+        return chain_response(past,present.text)
+   
+    else: 
         return '{} ({} {} {})'.format(path, namespace, podname, get_version())
 
 if __name__ == '__main__':

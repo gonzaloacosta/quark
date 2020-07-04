@@ -64,6 +64,12 @@ objects:
             requests:
               memory: 256Mi
               cpu: 200m
+          #dnsPolicy: ClusterFirst
+          dnsConfig:
+            options:
+              #- name: ndots
+              #  value: 1
+              - name: single-request
 - apiVersion: v1
   kind: Service
   metadata:
