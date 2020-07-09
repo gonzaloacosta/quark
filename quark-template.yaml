@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: mimik-template
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: ${APP_NAME}
+      version: ${APP_VERSION}
+    name: ${APP_NAME}-${APP_VERSION}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: ${APP_NAME}
+        version: ${APP_VERSION}
+    strategy:
+      type: RollingUpdate
+    template:      
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: "true"
+        labels:
+          app: ${APP_NAME}
+          version: ${APP_VERSION}
+      spec:
+        volumes:
+        - name: pod-info
+          downwardAPI:
+            items:    
+            - fieldRef:
+                fieldPath: metadata.labels
+              path: pod_labels
+        - name: QUARK_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: QUARK_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        containers:
+        - image: quay.io/gonzaloacosta/quark:latest        
+          imagePullPolicy: Always
+          name: ${APP_NAME}
+          env:
+          - name: QUARK_TYPE
+            value: ${QUARK_TYPE}
+          - name: QUARK_DESTINATION
+            value: ${QUARK_DESTINATION}
+          - name: QUARK_SIMULATE_ERROR
+            value: ${QUARK_SIMULATE_ERROR}
+          volumeMounts:
+          - name: pod-info
+            mountPath: /tmp/etc
+          ports:
+          - containerPort: 5000
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 200m
+            requests:
+              memory: 256Mi
+              cpu: 200m
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${APP_NAME}
+    labels:
+      app: ${APP_NAME}
+  spec:
+    ports:
+    - port: 5000
+      protocol: TCP
+      name: http
+    selector:
+      app: ${APP_NAME}
+parameters:
+- description: Application Name
+  displayName: Application Name
+  name: APP_NAME
+  required: true
+  value: quark
+- description: Application Version
+  displayName: Application Version
+  name: APP_VERSION
+  required: true
+  value: v1
+- description: Quark Type
+  displayName: Quark Type
+  name: QUARK_TYPE
+  required: true
+  value: edge
+- description: Quark Destination
+  displayName: Quark Destination
+  name: QUARK_DESTINATION
+  required: true
+  value: http://dev/null
+- description: Quark Simulate Error (500)
+  displayName: Quark Simulate Error (500)
+  name: QUARK_SIMULATE_ERROR
+  required: true
+  value: "false"
