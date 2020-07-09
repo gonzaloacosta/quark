@@ -3,6 +3,7 @@ from flask import Flask, request
 import requests
 import os
 import time
+import re
 
 app = Flask(__name__)
 
@@ -10,11 +11,11 @@ app = Flask(__name__)
 def get(path): # pragma: no cover
     return quark(path, 
                  request.headers, 
-                 os.environ.get('QUARK_TYPE'), 
-                 os.environ.get('QUARK_DESTINATION'),
-                 os.environ.get('QUARK_SIMULATE_ERROR'),
-                 os.environ.get('QUARK_POD_NAME'),
-                 os.environ.get('QUARK_POD_NAMESPACE'))
+                 os.environ.get('APP_TYPE'), 
+                 os.environ.get('APP_DESTINATION'),
+                 os.environ.get('APP_SIMULATE_ERROR'),
+                 os.environ.get('POD_NAME'),
+                 os.environ.get('POD_NAMESPACE'))
 
 def chain_response(past, present):    
     if past is None:      
@@ -31,7 +32,8 @@ def get_version():
                 values = label.split('=')
 
                 if values[0] == 'version':
-                    version = values[1]
+                    version = re.sub("\"",'',values[1])
+
     except: 
         return version                
 
@@ -59,7 +61,7 @@ def quark(path, headers, type, destination, error, podname, namespace):
         past = '{} ({}.{}.{})'.format(path, namespace, podname, get_version())
         return chain_response(past, present)
     else:
-        return '{} ({}-{}-{})'.format(path, namespace, podname, get_version())
+        return '{} ({} {} {})'.format(path, namespace, podname, get_version())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)  # pragma: no cover

@@ -33,14 +33,6 @@ objects:
             - fieldRef:
                 fieldPath: metadata.labels
               path: pod_labels
-        - name: QUARK_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: QUARK_POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
         containers:
         - image: quay.io/gonzaloacosta/quark:latest        
           imagePullPolicy: Always
@@ -52,6 +44,14 @@ objects:
             value: ${QUARK_DESTINATION}
           - name: QUARK_SIMULATE_ERROR
             value: ${QUARK_SIMULATE_ERROR}
+          - name: QUARK_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: QUARK_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           volumeMounts:
           - name: pod-info
             mountPath: /tmp/etc
@@ -98,8 +98,8 @@ parameters:
   name: QUARK_DESTINATION
   required: true
   value: http://dev/null
-- description: Quark Simulate Error (500)
-  displayName: Quark Simulate Error (500)
+- description: Simulate Error (500)
+  displayName: Simulate Error (500)
   name: QUARK_SIMULATE_ERROR
   required: true
   value: "false"
