@@ -1,3 +1,3 @@
 # Quark
 
-AplicaciÃÃn python para test en Openshifto Kubernetes 
+Aplicación en python para test de deployments en Kubernetes
