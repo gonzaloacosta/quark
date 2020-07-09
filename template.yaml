@@ -38,17 +38,17 @@ objects:
           imagePullPolicy: Always
           name: ${APP_NAME}
           env:
-          - name: QUARK_TYPE
-            value: ${QUARK_TYPE}
-          - name: QUARK_DESTINATION
-            value: ${QUARK_DESTINATION}
-          - name: QUARK_SIMULATE_ERROR
-            value: ${QUARK_SIMULATE_ERROR}
-          - name: QUARK_POD_NAME
+          - name: APP_TYPE
+            value: ${APP_TYPE}
+          - name: APP_DESTINATION
+            value: ${APP_DESTINATION}
+          - name: APP_SIMULATE_ERROR
+            value: ${APP_SIMULATE_ERROR}
+          - name: POD_NAME
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          - name: QUARK_POD_NAMESPACE
+          - name: POD_NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
@@ -88,18 +88,18 @@ parameters:
   name: APP_VERSION
   required: true
   value: v1
-- description: Quark Type
-  displayName: Quark Type
-  name: QUARK_TYPE
+- description: Application Type [ passthroug | edge ]
+  displayName: Application Type [ passthroug | edge ]
+  name: APP_TYPE
   required: true
   value: edge
-- description: Quark Destination
-  displayName: Quark Destination
-  name: QUARK_DESTINATION
+- description: Application Destination
+  displayName: Application Destination
+  name: APP_DESTINATION
   required: true
   value: http://dev/null
 - description: Simulate Error (500)
   displayName: Simulate Error (500)
-  name: QUARK_SIMULATE_ERROR
+  name: APP_SIMULATE_ERROR
   required: true
   value: "false"

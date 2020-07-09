@@ -58,7 +58,7 @@ def quark(path, headers, type, destination, error, podname, namespace):
         return 'Error', 503
     elif type == 'passthrough':
         present = requests.get(destination, headers=prepare_outbound_headers(headers)).text
-        past = '{} ({}.{}.{})'.format(path, namespace, podname, get_version())
+        past = '{} ({} {} {})'.format(path, namespace, podname, get_version())
         return chain_response(past, present)
     else:
         return '{} ({} {} {})'.format(path, namespace, podname, get_version())
