@@ -2,13 +2,6 @@
 NAMESPACE=quark
 oc create namespace $NAMESPACE
 
-# Deploy Start
-oc process -f template.yaml -n $NAMESPACE \
-    -p APP_NAME=start \
-    -p APP_VERSION=v1 \
-    -p APP_TYPE=passthrough \
-    -p APP_DESTINATION=http://swim:5000/swim | oc apply -f - -n $NAMESPACE
-
 # Deploy SWIM
 oc process -f template.yaml -n $NAMESPACE \
     -p APP_NAME=swim \
@@ -30,9 +23,10 @@ oc process -f template.yaml -n $NAMESPACE \
     -p APP_TYPE=edge | oc apply -f - -n $NAMESPACE
 
 # Expose SERVICE
-oc expose svc start
+oc expose svc swim --name=start
 
 # Test ROUTE
 sleep 10 
+curl $(oc get routes start -o jsonpath='{ .spec.host }')/swim
 
-curl $(oc get routes start -o jsonpath='{ .spec.host }')/start
+
