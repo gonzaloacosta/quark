@@ -26,6 +26,10 @@ objects:
           app: ${APP_NAME}
           version: ${APP_VERSION}
       spec:
+        dnsPolicy: ClusterFirst
+        dnsConfig:
+          options:
+            - name: single-request
         volumes:
         - name: pod-info
           downwardAPI:
@@ -64,12 +68,6 @@ objects:
             requests:
               memory: 256Mi
               cpu: 200m
-          #dnsPolicy: ClusterFirst
-          dnsConfig:
-            options:
-              #- name: ndots
-              #  value: 1
-              - name: single-request
 - apiVersion: v1
   kind: Service
   metadata:
