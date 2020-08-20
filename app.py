@@ -51,7 +51,6 @@ def prepare_outbound_headers(inbound_headers):
     outbound_headers = {}
 
     outbound_headers['Authorization'] = inbound_headers.get('Authorization')
-
     outbound_headers['x-request-id'] = inbound_headers.get('x-request-id')
     outbound_headers['x-b3-traceid'] = inbound_headers.get('x-b3-traceid')      
     outbound_headers['x-b3-spanid'] = inbound_headers.get('x-b3-spanid')
