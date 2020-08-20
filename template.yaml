@@ -92,8 +92,8 @@ parameters:
   name: APP_VERSION
   required: true
   value: v1
-- description: Application Type [ passthroug | edge ]
-  displayName: Application Type [ passthroug | edge ]
+- description: Application Type
+  displayName: Application Type
   name: APP_TYPE
   required: true
   value: edge
