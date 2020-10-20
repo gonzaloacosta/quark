@@ -72,4 +72,4 @@ def quark(path, headers, type, destination, error, podname, namespace):
         return '{} ({} {} {})'.format(path, namespace, podname, get_version())
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)  # pragma: no cover
+    app.run(host='0.0.0.0', port=8080)  # pragma: no cover

@@ -42,11 +42,29 @@ curl $(oc get routes start -o jsonpath='{ .spec.host }')/swim
 ```bash
 # Namespace
 NAMESPACE=quark
+oc create namespace $NAMESPACE
+
+# Create secrets if a private repo
+oc create secret generic git-sercret \
+    --from-literal=username=gonzaloacosta \
+    --from-literal=password=SuperSecretPassword \
+    -n $NAMESPACE
 
 # Build and Deploy App
-oc new-app python:latest~https://gitlab.com/gonzaloacosta/quark.git --name=quark \
+oc new-app python:latest~https://gitlab.com/gonzaloacosta/quark.git \
+    --name=quark \
+    --source-secret=git-sercret \
     -e APP_NAME=quark \
     -e APP_VERSION=v1 \
-    -e QUARK_TYPE=edge -n $NAMESPACE
+    -e QUARK_TYPE=edge \
+    -n $NAMESPACE
+
+# Expose SERVICE
+oc expose svc quark
+
+# Test ROUTE
+sleep 10 
+curl $(oc get routes start -o jsonpath='{ .spec.host }')/quark
+
 ```
 
